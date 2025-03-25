@@ -475,7 +475,7 @@ describe("return-dispatch", () => {
       branchName: "main",
     });
     const defaultOpts: GetRunIdAndUrlOpts = {
-      startTime: Date.now(),
+      startTime: new Date(),
       branch: branch,
       distinctIdRegex: distinctIdRegex,
       workflowId: workflowId,
@@ -837,7 +837,7 @@ describe("return-dispatch", () => {
       expect(coreDebugLogMock.mock.calls[0]?.[0]).toMatchSnapshot();
 
       expect(utilSleepMock).toHaveBeenCalledTimes(3);
-      const elapsedTime = Date.now() - defaultOpts.startTime; // `waitTime` should be using `workflowTimeoutMs` at this point
+      const elapsedTime = Date.now() - defaultOpts.startTime.getTime(); // `waitTime` should be using `workflowTimeoutMs` at this point
       expect(utilSleepMock.mock.lastCall?.[0]).approximately(
         timeoutMs - elapsedTime,
         5,

@@ -16,7 +16,7 @@ import {
 
 export async function main(): Promise<void> {
   try {
-    const startTime = Date.now();
+    const startTime = new Date();
 
     const config = getConfig();
     api.init(config);
@@ -48,10 +48,10 @@ export async function main(): Promise<void> {
     });
     if (result.success) {
       handleActionSuccess(result.value.id, result.value.url);
-      core.debug(`Completed (${Date.now() - startTime}ms)`);
+      core.debug(`Completed (${Date.now() - startTime.getTime()}ms)`);
     } else {
       handleActionFail();
-      core.debug(`Timed out (${Date.now() - startTime}ms)`);
+      core.debug(`Timed out (${Date.now() - startTime.getTime()}ms)`);
     }
   } catch (error) {
     if (error instanceof Error) {

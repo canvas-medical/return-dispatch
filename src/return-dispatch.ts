@@ -124,7 +124,7 @@ export function handleActionFail(): void {
 }
 
 export interface GetRunIdAndUrlOpts {
-  startTime: number;
+  startTime: Date;
   branch: BranchNameResult;
   distinctIdRegex: RegExp;
   workflowId: number;
@@ -145,18 +145,18 @@ export async function getRunIdAndUrl({
   );
 
   let attemptNo = 0;
-  let elapsedTime = Date.now() - startTime;
+  let elapsedTime = Date.now() - startTime.getTime();
   while (elapsedTime < workflowTimeoutMs) {
     attemptNo++;
 
     // Get all runs for a given workflow ID
     const fetchWorkflowRunIds = await api.retryOrTimeout(
-      () => api.fetchWorkflowRunIds(workflowId, branch),
+      () => api.fetchWorkflowRunIds(workflowId, branch, startTime),
       retryTimeout,
     );
     if (!fetchWorkflowRunIds.success) {
       core.debug(
-        `Timed out while attempting to fetch Workflow Run IDs, waited ${Date.now() - startTime}ms`,
+        `Timed out while attempting to fetch Workflow Run IDs, waited ${Date.now() - startTime.getTime()}ms`,
       );
       break;
     }
@@ -188,7 +188,7 @@ export async function getRunIdAndUrl({
     core.info(`Waiting for ${waitTime}ms before the next attempt...`);
     await sleep(waitTime);
 
-    elapsedTime = Date.now() - startTime;
+    elapsedTime = Date.now() - startTime.getTime();
   }
 
   return { success: false, reason: "timeout" };

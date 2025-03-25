@@ -24018,7 +24018,7 @@ async function dispatchWorkflow(distinctId) {
       workflow_id: config.workflow,
       ref: config.ref,
       inputs: {
-        ...config.workflowInputs ? config.workflowInputs : void 0,
+        ...config.workflowInputs ?? void 0,
         distinct_id: distinctId
       }
     });
@@ -24124,13 +24124,14 @@ async function fetchWorkflowRunUrl(runId) {
     throw error5;
   }
 }
-async function fetchWorkflowRunIds(workflowId, branch) {
+async function fetchWorkflowRunIds(workflowId, branch, created = void 0) {
   try {
     const useBranchFilter = !branch.isTag && branch.branchName !== void 0 && branch.branchName !== "";
     const response = await octokit.rest.actions.listWorkflowRuns({
       owner: config.owner,
       repo: config.repo,
       workflow_id: workflowId,
+      ...created ? { created: `>=${created.toISOString()}` } : {},
       ...useBranchFilter ? {
         branch: branch.branchName,
         per_page: 10
@@ -24151,6 +24152,7 @@ async function fetchWorkflowRunIds(workflowId, branch) {
       `Fetched Workflow Runs:
   Repository: ${config.owner}/${config.repo}
   Branch Filter: ${branchMsg}
+  Created Filter: ${created?.toISOString() ?? ""}
   Workflow ID: ${workflowId}
   Runs Fetched: [${runIds.join(", ")}]`
     );
@@ -24321,16 +24323,16 @@ async function getRunIdAndUrl({
     workflowTimeoutMs
   );
   let attemptNo = 0;
-  let elapsedTime = Date.now() - startTime;
+  let elapsedTime = Date.now() - startTime.getTime();
   while (elapsedTime < workflowTimeoutMs) {
     attemptNo++;
     const fetchWorkflowRunIds2 = await retryOrTimeout(
-      () => fetchWorkflowRunIds(workflowId, branch),
+      () => fetchWorkflowRunIds(workflowId, branch, startTime),
       retryTimeout
     );
     if (!fetchWorkflowRunIds2.success) {
       core4.debug(
-        `Timed out while attempting to fetch Workflow Run IDs, waited ${Date.now() - startTime}ms`
+        `Timed out while attempting to fetch Workflow Run IDs, waited ${Date.now() - startTime.getTime()}ms`
       );
       break;
     }
@@ -24357,7 +24359,7 @@ async function getRunIdAndUrl({
     );
     core4.info(`Waiting for ${waitTime}ms before the next attempt...`);
     await sleep(waitTime);
-    elapsedTime = Date.now() - startTime;
+    elapsedTime = Date.now() - startTime.getTime();
   }
   return { success: false, reason: "timeout" };
 }
@@ -24365,7 +24367,7 @@ async function getRunIdAndUrl({
 // src/main.ts
 async function main() {
   try {
-    const startTime = Date.now();
+    const startTime = /* @__PURE__ */ new Date();
     const config2 = getConfig();
     init(config2);
     const workflowId = await getWorkflowId(config2.workflow);
@@ -24388,10 +24390,10 @@ async function main() {
     });
     if (result.success) {
       handleActionSuccess(result.value.id, result.value.url);
-      core5.debug(`Completed (${Date.now() - startTime}ms)`);
+      core5.debug(`Completed (${Date.now() - startTime.getTime()}ms)`);
     } else {
       handleActionFail();
-      core5.debug(`Timed out (${Date.now() - startTime}ms)`);
+      core5.debug(`Timed out (${Date.now() - startTime.getTime()}ms)`);
     }
   } catch (error5) {
     if (error5 instanceof Error) {

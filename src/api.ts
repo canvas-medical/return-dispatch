@@ -158,6 +158,7 @@ export async function fetchWorkflowRunUrl(runId: number): Promise<string> {
 export async function fetchWorkflowRunIds(
   workflowId: number,
   branch: BranchNameResult,
+  created: Date | undefined = undefined,
 ): Promise<number[]> {
   try {
     const useBranchFilter =
@@ -170,6 +171,7 @@ export async function fetchWorkflowRunIds(
       owner: config.owner,
       repo: config.repo,
       workflow_id: workflowId,
+      ...(created ? {created: `>=${created.toISOString()}`} : {}),
       ...(useBranchFilter
         ? {
             branch: branch.branchName,
@@ -198,6 +200,7 @@ export async function fetchWorkflowRunIds(
       "Fetched Workflow Runs:\n" +
         `  Repository: ${config.owner}/${config.repo}\n` +
         `  Branch Filter: ${branchMsg}\n` +
+        `  Created Filter: ${created?.toISOString() ?? ""}\n` +
         `  Workflow ID: ${workflowId}\n` +
         `  Runs Fetched: [${runIds.join(", ")}]`,
     );

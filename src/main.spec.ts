@@ -169,7 +169,7 @@ describe("main", () => {
     // Get run ID
     expect(returnDispatchGetRunIdAndUrlMock).toHaveBeenCalledOnce();
     expect(returnDispatchGetRunIdAndUrlMock).toHaveBeenCalledWith({
-      startTime: Date.now(),
+      startTime: new Date(),
       branch: testBranch,
       distinctIdRegex: distinctIdRegex,
       workflowId: 0,

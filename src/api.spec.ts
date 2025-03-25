@@ -370,6 +370,7 @@ describe("API", () => {
         "Fetched Workflow Runs:
           Repository: owner/repository
           Branch Filter: true (feature_branch)
+          Created Filter: 
           Workflow ID: 0
           Runs Fetched: [0, 1, 2]"
       `,
@@ -427,6 +428,7 @@ describe("API", () => {
         "Fetched Workflow Runs:
           Repository: owner/repository
           Branch Filter: true (feature_branch)
+          Created Filter: 
           Workflow ID: 0
           Runs Fetched: []"
       `,
@@ -464,6 +466,7 @@ describe("API", () => {
         "Fetched Workflow Runs:
           Repository: owner/repository
           Branch Filter: true (master)
+          Created Filter: 
           Workflow ID: 0
           Runs Fetched: []"
       `,
@@ -501,6 +504,7 @@ describe("API", () => {
         "Fetched Workflow Runs:
           Repository: owner/repository
           Branch Filter: false (/refs/tags/1.5.0)
+          Created Filter: 
           Workflow ID: 0
           Runs Fetched: []"
       `,
@@ -538,6 +542,7 @@ describe("API", () => {
         "Fetched Workflow Runs:
           Repository: owner/repository
           Branch Filter: false (/refs/cake)
+          Created Filter: 
           Workflow ID: 0
           Runs Fetched: []"
       `,
